@@ -3,8 +3,8 @@ name: Check Code Quality
 on: 
   pull_request:
     branches: [ main, develop ]
-  push:
-    branches: [ main, develop ]
+  # Every publisher calls this first and publishes only if it passes.
+  workflow_call:
 
 jobs:
   check-lint-and-build:

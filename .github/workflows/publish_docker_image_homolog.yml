@@ -6,8 +6,12 @@ on:
       - develop
 
 jobs:
+  quality:
+    uses: ./.github/workflows/check_code_quality.yml
+
   build_deploy:
     name: Build and Deploy
+    needs: quality
     runs-on: ubuntu-latest
     permissions:
       contents: read
