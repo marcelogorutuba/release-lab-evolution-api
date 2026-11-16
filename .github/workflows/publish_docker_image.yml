@@ -6,8 +6,12 @@ on:
       - "*.*.*"
 
 jobs:
+  quality:
+    uses: ./.github/workflows/check_code_quality.yml
+
   build_deploy:
     name: Build and Deploy
+    needs: quality
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,7 +27,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/marcelogorutuba/dockerhub/evolution-api # LAB: plays the Docker Hub role
-          tags: type=semver,pattern=v{{version}}
+          # latest moves only with a stable tag (no "-rc"), in the same build as vX.Y.Z.
+          flavor: latest=false
+          tags: |
+            type=semver,pattern=v{{version}}
+            type=raw,value=latest,enable=${{ !contains(github.ref_name, '-') }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
