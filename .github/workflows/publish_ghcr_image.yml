@@ -13,8 +13,12 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/evolution-api
 
 jobs:
+  quality:
+    uses: ./.github/workflows/check_code_quality.yml
+
   build-and-push:
     name: Build and Push GHCR
+    needs: quality
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -44,8 +48,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # latest is published only by the stable tag workflow.
+          flavor: latest=false
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=tag
             type=sha
