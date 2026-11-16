@@ -22,7 +22,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: evoapicloud/evolution-api
+          images: ghcr.io/marcelogorutuba/dockerhub/evolution-api # LAB: plays the Docker Hub role
           tags: homolog
 
       - name: Set up QEMU
@@ -34,14 +34,15 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io # LAB
+          username: ${{ github.actor }} # LAB
+          password: ${{ secrets.GITHUB_TOKEN }} # LAB
 
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64 # LAB: arm64 under QEMU is too slow for the lab
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
